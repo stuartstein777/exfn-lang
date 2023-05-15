@@ -80,7 +80,40 @@ func ReadStringLiteral(source string, current, line, sourceLen int) (Token, Stri
 }
 
 func ReadIdentifier(source string, current, line, sourceLen int) (Token, int) {
+	reservedKeywords := map[string]TokenType{
+		"and":    AND,
+		"class":  CLASS,
+		"else":   ELSE,
+		"false":  FALSE,
+		"for":    FOR,
+		"fun":    FUN,
+		"if":     IF,
+		"nil":    NIL,
+		"or":     OR,
+		"print":  PRINT,
+		"return": RETURN,
+		"super":  SUPER,
+		"this":   THIS,
+		"true":   TRUE,
+		"var":    VAR,
+		"while":  WHILE,
+	}
 
+	identifier := ""
+	i := current
+	for i < sourceLen {
+		if IsAlpha(source[i]) || IsDigit(source[i]) {
+			identifier += string(source[i])
+			i++
+		} else {
+			break
+		}
+	}
+
+	if tokenType, ok := reservedKeywords[identifier]; ok {
+		return Token{tokenType, identifier, nil, line, i - current}, i - current
+	}
+	return Token{IDENTIFIER, identifier, nil, line, i - current}, i - current
 }
 
 func IsDigit(char byte) bool {
@@ -181,7 +214,8 @@ func ScanToken(source string, current, line int) (Token, int, string) {
 			}
 			return token, token.Length, ""
 		} else if IsAlpha(source[current]) {
-			token, err := ReadIdentifier(source, current, line, l)
+			token, _ := ReadIdentifier(source, current, line, l)
+			return token, token.Length, ""
 		} else {
 			return Token{}, 1, "" //TODO: Error handling for invalid lexemes! e.g. rogue &^%$ etc
 		}

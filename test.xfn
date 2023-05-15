@@ -13,3 +13,4 @@
 // comment 3
 >=
 "
+var x = 6;
