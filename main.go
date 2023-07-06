@@ -1,80 +1,27 @@
 package main
 
 import (
-	"fmt"
-	"io"
-	"os"
+	vm "github.com/stuartstein777/exfnlang/vm"
 )
 
-// TODO: add error handling, return error or nil if it ran fine.
-func run(source string) {
-	// get tokens from scanner
-	tokens := ScanTokens(source)
-
-	curLine := 0
-	for _, token := range tokens {
-		if token.Line > curLine {
-			curLine = token.Line
-			fmt.Println()
-			fmt.Printf("%d:", token.Line)
-		}
-		if token.Type == STRING {
-			fmt.Printf("\"%s\"", token.Literal)
-		} else {
-			fmt.Printf("`%s` ", token.Lexeme)
-		}
-	}
-	fmt.Println()
-
-}
-
-func runFile(path string) {
-	source, err := os.ReadFile(path)
-
-	if err != nil {
-		fmt.Println("Error reading file")
-		os.Exit(1)
-	}
-	run(string(source))
-}
-
-func runPrompt() {
-	for {
-		fmt.Print("> ")
-		var line string
-		_, err := fmt.Scanln(&line)
-
-		if err != nil {
-			if err == io.EOF {
-				os.Exit(1)
-			} else if err.Error() == "unexpected newline" {
-				continue
-			}
-			fmt.Println("Error reading input")
-			os.Exit(1)
-		}
-
-		if line == "" {
-			continue
-		}
-		if line == ":quit" {
-			return
-		}
-
-		run(line)
-	}
-}
-
 func main() {
-	// args := os.Args[1:] // 1: to exclude the program name
-	// numberOfArgs := len(args)
-	// if numberOfArgs > 1 {
-	// 	fmt.Println("Usage: jlox [script]")
-	// } else if numberOfArgs == 1 {
-	// 	runFile(args[0])
-	// } else {
-	// 	runPrompt()
-	// }
+	chunk := vm.Chunk{
+		Code:        []byte{},
+		LineNumbers: []int{},
+		Constants:   []vm.Value{},
+	}
 
-	runFile("test.xfn")
+	vm.WriteToChunk(&chunk, vm.OP_RETURN, 123)
+	vm.WriteConstantToChunk(&chunk, vm.OP_CONSTANT, 0, 123)
+	vm.AddConstant(&chunk, 456, 123)
+	vm.WriteConstantToChunk(&chunk, vm.OP_CONSTANT, 1, 123)
+	vm.AddConstant(&chunk, 789, 123)
+	vm.WriteToChunk(&chunk, vm.OP_RETURN, 124)
+	vm.WriteNZeroConstants(&chunk, 1022)
+	vm.WriteLongConstantToChunk(&chunk, vm.OP_CONSTANT_LONG, 1024, 125)
+	vm.AddConstant(&chunk, 912, 125)
+	vm.WriteToChunk(&chunk, vm.OP_RETURN, 126)
+
+	//fmt.Printf("%v\n", chunk)
+	vm.DisassembleChunk(chunk, "Test chunk")
 }

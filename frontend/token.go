@@ -1,4 +1,4 @@
-package main
+package frontend
 
 import "fmt"
 
@@ -19,6 +19,7 @@ const (
 	SEMICOLON
 	SLASH
 	STAR
+	PERCENT
 
 	// One or two character tokens.
 	BANG
@@ -40,7 +41,7 @@ const (
 	CLASS
 	ELSE
 	FALSE
-	FUN
+	FUNC
 	FOR
 	IF
 	NIL

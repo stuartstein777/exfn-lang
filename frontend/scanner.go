@@ -1,4 +1,4 @@
-package main
+package frontend
 
 import (
 	"fmt"
@@ -86,7 +86,7 @@ func ReadIdentifier(source string, current, line, sourceLen int) (Token, int) {
 		"else":   ELSE,
 		"false":  FALSE,
 		"for":    FOR,
-		"fun":    FUN,
+		"func":   FUNC,
 		"if":     IF,
 		"nil":    NIL,
 		"or":     OR,
@@ -158,6 +158,8 @@ func ScanToken(source string, current, line int) (Token, int, string) {
 		return Token{PLUS, "+", nil, line, 1}, 1, ""
 	case ';':
 		return Token{SEMICOLON, ";", nil, line, 1}, 1, ""
+	case '%':
+		return Token{PERCENT, "%", nil, line, 1}, 1, ""
 	case '*':
 		return Token{STAR, "*", nil, line, 1}, 1, ""
 	case '!':
