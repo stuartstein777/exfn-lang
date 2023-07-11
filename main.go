@@ -11,14 +11,15 @@ func main() {
 		Constants:   []vm.Value{},
 	}
 
-	vm.WriteConstantToChunk(&chunk, vm.OP_CONSTANT, 0, 123)
-	vm.AddConstant(&chunk, 456, 123)
-	vm.WriteConstantToChunk(&chunk, vm.OP_CONSTANT, 1, 123)
-	vm.AddConstant(&chunk, 789, 123)
+	vm.WriteConstantToChunk(&chunk, vm.OP_CONSTANT, 0, 1)
+	vm.AddConstant(&chunk, 456, 1)
+	vm.WriteConstantToChunk(&chunk, vm.OP_CONSTANT, 1, 1)
+	vm.AddConstant(&chunk, 789, 1)
 	vm.WriteNZeroConstants(&chunk, 1022)
-	vm.WriteLongConstantToChunk(&chunk, vm.OP_CONSTANT_LONG, 1024, 125)
-	vm.AddConstant(&chunk, 912, 125)
-	vm.WriteToChunk(&chunk, vm.OP_RETURN, 126)
+	vm.WriteLongConstantToChunk(&chunk, vm.OP_CONSTANT_LONG, 1024, 2)
+	vm.AddConstant(&chunk, 912, 2)
+	vm.WriteToChunk(&chunk, vm.OP_NEGATE, 3)
+	vm.WriteToChunk(&chunk, vm.OP_RETURN, 4)
 
 	curVm := vm.VM{
 		Chunk: &chunk,

@@ -19,6 +19,20 @@ type VM struct {
 	StackPtr int
 }
 
+func (vm *VM) Push(value Value) {
+	vm.Stack[vm.StackPtr] = value
+	vm.StackPtr++
+}
+
+func (vm *VM) Pop() Value {
+	vm.StackPtr--
+	return vm.Stack[vm.StackPtr]
+}
+
+func (vm *VM) ResetStack() {
+	vm.StackPtr = 0
+}
+
 func ReadNextByte(vm *VM) byte {
 	opCode := vm.Chunk.Code[vm.IP]
 	vm.IP++
@@ -38,64 +52,16 @@ func Run(vm *VM) int {
 		case OP_CONSTANT:
 			constantIndex := ReadNextByte(vm)
 			value := vm.Chunk.Constants[int(constantIndex)]
-			vm.Stack[vm.StackPtr] = value
-			vm.StackPtr++
+			vm.Push(value)
 		case OP_CONSTANT_LONG:
 			constantIndex := binary.BigEndian.Uint32([]byte{ReadNextByte(vm), ReadNextByte(vm), ReadNextByte(vm), ReadNextByte(vm)})
 			value := vm.Chunk.Constants[int(constantIndex)]
-			vm.Stack[vm.StackPtr] = value
-			vm.StackPtr++
+			vm.Push(value)
+		case OP_NEGATE:
+			vm.Push(-vm.Pop())
 		}
 	}
 }
-
-// --------------- Chunks -----------------//
-// TODO: Move this chunk.go
-type Chunk struct {
-	Code        []byte
-	LineNumbers []int
-	Constants   []Value
-}
-
-// TODO: Move this chunk.go
-func WriteToChunk(chunk *Chunk, opCode byte, line int) {
-	chunk.Code = append(chunk.Code, opCode)
-	chunk.LineNumbers = append(chunk.LineNumbers, line)
-}
-
-// TODO: Move this chunk.go
-func WriteConstantToChunk(chunk *Chunk, opCode byte, constantIndex float32, line int) {
-	codeAndConstant := []byte{opCode, byte(constantIndex)}
-	chunk.Code = append(chunk.Code, codeAndConstant...)
-	chunk.LineNumbers = append(chunk.LineNumbers, line)
-}
-
-// TODO: Move this chunk.go
-func AddConstant(chunk *Chunk, value Value, line int) int {
-	chunk.Constants = append(chunk.Constants, value)
-	chunk.LineNumbers = append(chunk.LineNumbers, line)
-	return len(chunk.Constants) - 1
-}
-
-// TODO: Move this chunk.go
-func WriteLongConstantToChunk(chunk *Chunk, opCode byte, constantIndex int, line int) {
-	chunk.Code = append(chunk.Code, opCode)
-	valueBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(valueBytes, uint32(constantIndex))
-	chunk.Code = append(chunk.Code, valueBytes...)
-	lines := []int{line, line, line, line}
-	chunk.LineNumbers = append(chunk.LineNumbers, lines...)
-}
-
-/* =========== Debugging test methods - to remove */
-//TODO: Move this chunk.go
-func WriteNZeroConstants(chunk *Chunk, n int) {
-	for i := 0; i < n; i++ {
-		chunk.Constants = append(chunk.Constants, 0)
-	}
-}
-
-/* =========== Debugging test methods - to remove */
 
 /*
 OP_RETURN   -> return from a function.
@@ -106,8 +72,14 @@ const (
 	OP_RETURN byte = iota
 	OP_CONSTANT
 	OP_CONSTANT_LONG
+	OP_NEGATE
+	OP_ADD
+	OP_SUBTRACT
 )
 
+/*
+Possible results of running the VM with a chunk.
+*/
 const (
 	INTERPRET_OK = iota
 	INTERPRET_COMPILE_ERROR
