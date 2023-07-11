@@ -2,11 +2,10 @@ package vm
 
 import (
 	"encoding/binary"
-	"fmt"
-	"unsafe"
 )
 
 const Debugging = true
+const StackMax = 256
 
 type Value = float64
 
@@ -15,19 +14,22 @@ type VM struct {
 	Chunk *Chunk
 	// Want the IP as a pointer so that we can increment it.
 	// and deref straight into the chunk.
-	IP *byte
+	IP       int
+	Stack    [StackMax]Value
+	StackPtr int
 }
 
 func ReadNextByte(vm *VM) byte {
-	opCode := *vm.IP
-	vm.IP = (*byte)(unsafe.Pointer(uintptr(unsafe.Pointer(vm.IP)) + 1))
+	opCode := vm.Chunk.Code[vm.IP]
+	vm.IP++
 	return opCode
 }
 
 func Run(vm *VM) int {
 	for {
 		if Debugging {
-			disassembleInstruction(*vm.Chunk, int(*vm.IP))
+			disassembleInstruction(*vm.Chunk, vm.IP)
+			printStack(vm)
 		}
 		opCode := ReadNextByte(vm)
 		switch opCode {
@@ -36,11 +38,13 @@ func Run(vm *VM) int {
 		case OP_CONSTANT:
 			constantIndex := ReadNextByte(vm)
 			value := vm.Chunk.Constants[int(constantIndex)]
-			fmt.Printf("Constant: %v\n", value)
+			vm.Stack[vm.StackPtr] = value
+			vm.StackPtr++
 		case OP_CONSTANT_LONG:
 			constantIndex := binary.BigEndian.Uint32([]byte{ReadNextByte(vm), ReadNextByte(vm), ReadNextByte(vm), ReadNextByte(vm)})
 			value := vm.Chunk.Constants[int(constantIndex)]
-			fmt.Printf("Long Constant: %v\n", value)
+			vm.Stack[vm.StackPtr] = value
+			vm.StackPtr++
 		}
 	}
 }

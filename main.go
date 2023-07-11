@@ -11,7 +11,6 @@ func main() {
 		Constants:   []vm.Value{},
 	}
 
-	//vm.WriteToChunk(&chunk, vm.OP_RETURN, 123)
 	vm.WriteConstantToChunk(&chunk, vm.OP_CONSTANT, 0, 123)
 	vm.AddConstant(&chunk, 456, 123)
 	vm.WriteConstantToChunk(&chunk, vm.OP_CONSTANT, 1, 123)
@@ -23,7 +22,7 @@ func main() {
 
 	curVm := vm.VM{
 		Chunk: &chunk,
-		IP:    &chunk.Code[0],
+		IP:    0,
 	}
 
 	curVm.Chunk = &chunk
@@ -33,9 +32,3 @@ func main() {
 	//fmt.Printf("%v\n", chunk)
 	//vm.DisassembleChunk(chunk, "Test chunk")
 }
-
-/*
- IP  |
-	[0][1][2][3][3][1][1][1]
-
-*/

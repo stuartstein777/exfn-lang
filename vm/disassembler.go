@@ -5,6 +5,14 @@ import (
 	"fmt"
 )
 
+func printStack(vm *VM) {
+	fmt.Printf("          ")
+	for i := 0; i < vm.StackPtr; i++ {
+		fmt.Printf("[ %g ]", vm.Stack[i])
+	}
+	fmt.Printf("\n")
+}
+
 func simpleInstruction(name string, offset int) int {
 	fmt.Printf("%s\n", name)
 	return offset + 1
