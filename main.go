@@ -19,6 +19,7 @@ func main() {
 	vm.WriteLongConstantToChunk(&chunk, vm.OP_CONSTANT_LONG, 1024, 2)
 	vm.AddConstant(&chunk, 912, 2)
 	vm.WriteToChunk(&chunk, vm.OP_NEGATE, 3)
+	vm.WriteToChunk(&chunk, vm.OP_ADD, 2)
 	vm.WriteToChunk(&chunk, vm.OP_RETURN, 4)
 
 	curVm := vm.VM{

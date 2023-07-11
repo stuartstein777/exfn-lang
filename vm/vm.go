@@ -39,6 +39,18 @@ func ReadNextByte(vm *VM) byte {
 	return opCode
 }
 
+func Add(vm *VM) {
+	b := vm.Pop()
+	a := vm.Pop()
+	vm.Push(a + b)
+}
+
+func Subtract(vm *VM) {
+	b := vm.Pop()
+	a := vm.Pop()
+	vm.Push(a - b)
+}
+
 func Run(vm *VM) int {
 	for {
 		if Debugging {
@@ -59,29 +71,10 @@ func Run(vm *VM) int {
 			vm.Push(value)
 		case OP_NEGATE:
 			vm.Push(-vm.Pop())
+		case OP_ADD:
+			Add(vm)
+		case OP_SUBTRACT:
+			Subtract(vm)
 		}
 	}
 }
-
-/*
-OP_RETURN   -> return from a function.
-OP_CONSTANT -> 2 bytes, first byte is opcode, 2nd byte is index of constant in chunk's constants array.
-*/
-const (
-	// Single-character tokens.
-	OP_RETURN byte = iota
-	OP_CONSTANT
-	OP_CONSTANT_LONG
-	OP_NEGATE
-	OP_ADD
-	OP_SUBTRACT
-)
-
-/*
-Possible results of running the VM with a chunk.
-*/
-const (
-	INTERPRET_OK = iota
-	INTERPRET_COMPILE_ERROR
-	INTERPRET_RUNTIME_ERROR
-)
