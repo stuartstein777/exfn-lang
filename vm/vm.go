@@ -39,6 +39,10 @@ func ReadNextByte(vm *VM) byte {
 	return opCode
 }
 
+/*
+TODO: Move instruction handlers to their own file.
+if it gets too big.
+*/
 func Add(vm *VM) {
 	b := vm.Pop()
 	a := vm.Pop()
@@ -49,6 +53,22 @@ func Subtract(vm *VM) {
 	b := vm.Pop()
 	a := vm.Pop()
 	vm.Push(a - b)
+}
+
+func Divide(vm *VM) {
+	b := vm.Pop()
+	a := vm.Pop()
+	vm.Push(a / b)
+}
+
+func Multiply(vm *VM) {
+	b := vm.Pop()
+	a := vm.Pop()
+	vm.Push(a * b)
+}
+
+func Negate(vm *VM) {
+	vm.Stack[vm.StackPtr-1] = -vm.Stack[vm.StackPtr-1]
 }
 
 func Run(vm *VM) int {
@@ -70,11 +90,15 @@ func Run(vm *VM) int {
 			value := vm.Chunk.Constants[int(constantIndex)]
 			vm.Push(value)
 		case OP_NEGATE:
-			vm.Push(-vm.Pop())
+			Negate(vm)
 		case OP_ADD:
 			Add(vm)
 		case OP_SUBTRACT:
 			Subtract(vm)
+		case OP_MULTIPLY:
+			Multiply(vm)
+		case OP_DIVIDE:
+			Divide(vm)
 		}
 	}
 }
