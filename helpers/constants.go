@@ -1,4 +1,4 @@
-package vm
+package helpers
 
 /*
 OP_RETURN        -> return from a function.
@@ -27,4 +27,5 @@ const (
 	INTERPRET_OK = iota
 	INTERPRET_COMPILE_ERROR
 	INTERPRET_RUNTIME_ERROR
+	ERROR_READING_FILE = 65
 )

@@ -3,6 +3,8 @@ package vm
 import (
 	"encoding/binary"
 	"fmt"
+
+	h "github.com/stuartstein777/exfnlang/helpers"
 )
 
 func printStack(vm *VM) {
@@ -60,21 +62,21 @@ func disassembleInstruction(chunk Chunk, offset int) int {
 	}
 
 	switch instruction {
-	case OP_RETURN:
+	case h.OP_RETURN:
 		return simpleInstruction("OP_RETURN", offset)
-	case OP_CONSTANT:
+	case h.OP_CONSTANT:
 		return constantInstruction("OP_CONSTANT", chunk, offset)
-	case OP_CONSTANT_LONG:
+	case h.OP_CONSTANT_LONG:
 		return constantLongInstruction("OP_CONSTANT_LONG", chunk, offset)
-	case OP_NEGATE:
+	case h.OP_NEGATE:
 		return simpleInstruction("OP_NEGATE", offset)
-	case OP_ADD:
+	case h.OP_ADD:
 		return simpleInstruction("OP_ADD", offset)
-	case OP_SUBTRACT:
+	case h.OP_SUBTRACT:
 		return simpleInstruction("OP_SUBTRACT", offset)
-	case OP_MULTIPLY:
+	case h.OP_MULTIPLY:
 		return simpleInstruction("OP_MULTIPLY", offset)
-	case OP_DIVIDE:
+	case h.OP_DIVIDE:
 		return simpleInstruction("OP_DIVIDE", offset)
 	default:
 		fmt.Printf("Unknown opcode %d\n", instruction)

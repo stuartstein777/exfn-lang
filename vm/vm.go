@@ -2,6 +2,8 @@ package vm
 
 import (
 	"encoding/binary"
+
+	h "github.com/stuartstein777/exfnlang/helpers"
 )
 
 const Debugging = true
@@ -79,25 +81,25 @@ func Run(vm *VM) int {
 		}
 		opCode := ReadNextByte(vm)
 		switch opCode {
-		case OP_RETURN:
-			return INTERPRET_OK
-		case OP_CONSTANT:
+		case h.OP_RETURN:
+			return h.INTERPRET_OK
+		case h.OP_CONSTANT:
 			constantIndex := ReadNextByte(vm)
 			value := vm.Chunk.Constants[int(constantIndex)]
 			vm.Push(value)
-		case OP_CONSTANT_LONG:
+		case h.OP_CONSTANT_LONG:
 			constantIndex := binary.BigEndian.Uint32([]byte{ReadNextByte(vm), ReadNextByte(vm), ReadNextByte(vm), ReadNextByte(vm)})
 			value := vm.Chunk.Constants[int(constantIndex)]
 			vm.Push(value)
-		case OP_NEGATE:
+		case h.OP_NEGATE:
 			Negate(vm)
-		case OP_ADD:
+		case h.OP_ADD:
 			Add(vm)
-		case OP_SUBTRACT:
+		case h.OP_SUBTRACT:
 			Subtract(vm)
-		case OP_MULTIPLY:
+		case h.OP_MULTIPLY:
 			Multiply(vm)
-		case OP_DIVIDE:
+		case h.OP_DIVIDE:
 			Divide(vm)
 		}
 	}
