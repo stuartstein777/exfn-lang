@@ -199,6 +199,20 @@ func ScanToken() (ErrorToken, Token) {
 		}
 	case '/':
 		return ErrorToken{}, MakeToken(TOKEN_SLASH)
+	case '>':
+		if peek() == '=' {
+			advance()
+			return ErrorToken{}, MakeToken(TOKEN_GREATER_EQUAL)
+		} else {
+			return ErrorToken{}, MakeToken(TOKEN_GREATER)
+		}
+	case '<':
+		if peek() == '=' {
+			advance()
+			return ErrorToken{}, MakeToken(TOKEN_LESS_EQUAL)
+		} else {
+			return ErrorToken{}, MakeToken(TOKEN_LESS)
+		}
 	}
 
 	return ErrorToken{}, Token{}
