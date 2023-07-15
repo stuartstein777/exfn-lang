@@ -14,8 +14,8 @@ type Value = float64
 // --------------- The VM -----------------//
 type VM struct {
 	Chunk *Chunk
-	// Want the IP as a pointer so that we can increment it.
-	// and deref straight into the chunk.
+	/* TODO Want the IP as a pointer so that we can increment it.
+	and deref straight into the chunk.*/
 	IP       int
 	Stack    [StackMax]Value
 	StackPtr int

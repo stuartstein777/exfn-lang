@@ -1,256 +1,181 @@
 package frontend
 
-import (
-	"fmt"
-	"strconv"
+type Scanner struct {
+	Source       []rune
+	SourceLength int
+	Current      int
+	Start        int
+	Line         int
+}
+
+var (
+	scanner Scanner = Scanner{[]rune{}, 0, 0, 0, 1}
 )
 
-func peek(source string, current int, sourceLen int, expected byte) bool {
-	if current >= sourceLen {
-		return false
-	}
-	return source[current+1] == expected
+func peek() rune {
+	return scanner.Source[scanner.Current]
 }
 
-/*
-Valid: `123`, `123.456`
-Invalid: `123.`, `.123`, `123.456.789`, `123x` (where x is anything not . or digit)
+// Read the next token and advance the scanner.
+func advance() rune {
+	scanner.Current++
+	return rune(scanner.Source[scanner.Current-1])
 
-If we hit 2 decimal points, we should return an error and the length i so far, then
-the . can be read as a separate token
-*/
-func ReadNumericLiteral(source string, current, line, sourceLen int) (Token, NumberReadingError) {
-	// keep reading as long as we have digits or .
-	// but only allow one .
-	literal := ""
-	i := current
-	hasDecimalPlace := false
-	for i < sourceLen {
-		if IsDigit(source[i]) {
-			literal += string(source[i])
-			i++
-		} else if source[i] == '.' {
-			// We've read a decimal place, but we can't have two
-			if hasDecimalPlace {
-				return Token{},
-					NumberReadingError{
-						line,
-						current,
-						fmt.Sprintf("Invalid number starting at line: %d, col: %d", line, i-1),
-						i - current}
-			} else {
-				hasDecimalPlace = true
-				literal += string(source[i])
-				i++
-			}
-		} else {
-			break
-		}
-	}
-	nl, _ := strconv.ParseFloat(literal, 64)
-	return Token{NUMBER, literal, nl, line, i - current}, NumberReadingError{}
 }
 
-func ReadStringLiteral(source string, current, line, sourceLen int) (Token, StringReadingError) {
-	literal := ""
-	i := current + 1
-	closed := false
-	for i < sourceLen {
-		if source[i] == '"' {
-			closed = true
-			break
-		} else if source[i] == '\n' {
-			break
-		} else {
-			literal += string(source[i])
-			i++
-		}
-	}
-
-	if !closed {
-		return Token{},
-			StringReadingError{
-				line,
-				current,
-				fmt.Sprintf("Unterminated string starting at line: %d, col: %d", line, current),
-				len(literal)}
-	}
-
-	return Token{STRING, literal, literal, line, i - current + 1}, StringReadingError{}
-}
-
-func ReadIdentifier(source string, current, line, sourceLen int) (Token, int) {
-	reservedKeywords := map[string]TokenType{
-		"and":    AND,
-		"class":  CLASS,
-		"else":   ELSE,
-		"false":  FALSE,
-		"for":    FOR,
-		"func":   FUNC,
-		"if":     IF,
-		"nil":    NIL,
-		"or":     OR,
-		"print":  PRINT,
-		"return": RETURN,
-		"super":  SUPER,
-		"this":   THIS,
-		"true":   TRUE,
-		"var":    VAR,
-		"while":  WHILE,
-	}
-
-	identifier := ""
-	i := current
-	for i < sourceLen {
-		if IsAlpha(source[i]) || IsDigit(source[i]) {
-			identifier += string(source[i])
-			i++
-		} else {
-			break
-		}
-	}
-
-	if tokenType, ok := reservedKeywords[identifier]; ok {
-		return Token{tokenType, identifier, nil, line, i - current}, i - current
-	}
-	return Token{IDENTIFIER, identifier, nil, line, i - current}, i - current
-}
-
-func IsDigit(char byte) bool {
+func IsDigit(char rune) bool {
 	return char >= '0' && char <= '9'
 }
 
-func IsAlpha(char byte) bool {
+func IsAlpha(char rune) bool {
 	return (char >= 'a' && char <= 'z') ||
 		(char >= 'A' && char <= 'Z') ||
 		char == '_'
 }
 
-func ScanToken(source string, current, line int) (Token, int, string) {
-	l := len(source)
-	switch source[current] {
-	case '(':
-		return Token{LEFT_PAREN, "(", nil, line, 1}, 1, ""
-	case ')':
-		return Token{RIGHT_PAREN, ")", nil, line, 1}, 1, ""
-	case '{':
-		return Token{LEFT_BRACE, "{", nil, line, 1}, 1, ""
-	case '}':
-		return Token{RIGHT_BRACE, "}", nil, line, 1}, 1, ""
-	case '[':
-		return Token{LEFT_SQUARE_BRACKET, "[", nil, line, 1}, 1, ""
-	case ']':
-		return Token{RIGHT_SQUARE_BRACKET, "]", nil, line, 1}, 1, ""
-	case ',':
-		return Token{COMMA, ",", nil, line, 1}, 1, ""
-	case '.':
-		return Token{DOT, ".", nil, line, 1}, 1, ""
-	case '=':
-		// need to look ahead to see if it's ==
-		if peek(source, current, l, '=') {
-			return Token{EQUAL_EQUAL, "==", nil, line, 2}, 2, ""
-		} else {
-			return Token{EQUAL, "=", nil, line, 1}, 1, ""
-		}
-	case '-':
-		return Token{MINUS, "-", nil, line, 1}, 1, ""
-	case '+':
-		return Token{PLUS, "+", nil, line, 1}, 1, ""
-	case ';':
-		return Token{SEMICOLON, ";", nil, line, 1}, 1, ""
-	case '%':
-		return Token{PERCENT, "%", nil, line, 1}, 1, ""
-	case '*':
-		return Token{STAR, "*", nil, line, 1}, 1, ""
-	case '!':
-		// need to look ahead to see if it's !=
-		if peek(source, current, l, '=') {
-			return Token{BANG_EQUAL, "!=", nil, line, 2}, 2, ""
-		} else {
-			return Token{BANG, "!", nil, line, 1}, 1, ""
-		}
-	case '<':
-		// need to look ahead to see if it's <=
-		if peek(source, current, l, '=') {
-			return Token{LESS_EQUAL, "<=", nil, line, 2}, 2, ""
-		} else {
-			return Token{LESS, "<", nil, line, 1}, 1, ""
-		}
-	case '>':
-		// need to look ahead to see if it's >=
-		if peek(source, current, l, '=') {
-			return Token{GREATER_EQUAL, ">=", nil, line, 2}, 2, ""
-		} else {
-			return Token{GREATER, ">", nil, line, 1}, 1, ""
-		}
-	case '/':
-		// need to look ahead to see if it's a comment
-		if peek(source, current, l, '/') {
-			// a comment goes until the end of the line
-			n := current
-			for source[n] != '\n' && n < l {
-				n += 1
-			}
-			return Token{}, n - current, ""
-		} else {
-			return Token{SLASH, "/", nil, line, 1}, 1, ""
-		}
-	// string literals
-	case '"':
-		token, err := ReadStringLiteral(source, current, line, l)
-		if err != (StringReadingError{}) {
-			ReportError(line, current, err.Message, source)
-			return Token{}, err.UnclosedStringLength + 1, ""
-		}
-		return token, token.Length, ""
-	case '\r':
-		fallthrough
-	case '\n':
-		return Token{NEWLINE, "", nil, line, 1}, 1, ""
-	default:
-		if IsDigit(source[current]) {
-			token, err := ReadNumericLiteral(source, current, line, l)
-			if err != (NumberReadingError{}) {
-				ReportError(line, current, err.Message, source)
-				return Token{}, err.TokensRead, ""
-			}
-			return token, token.Length, ""
-		} else if IsAlpha(source[current]) {
-			token, _ := ReadIdentifier(source, current, line, l)
-			return token, token.Length, ""
-		} else {
-			return Token{}, 1, "" //TODO: Error handling for invalid lexemes! e.g. rogue &^%$ etc
+func MakeToken(tokenType TokenType) Token {
+	return Token{
+		tokenType,
+		scanner.Start,
+		scanner.Current - scanner.Start,
+		scanner.Line,
+	}
+}
+
+func SkipWhitespace() {
+	for {
+		c := peek()
+
+		switch c {
+		case ' ', '\r', '\t':
+			advance()
+		case '\n':
+			scanner.Line++
+			advance()
+		default:
+			return
 		}
 	}
 }
 
-func ScanTokens(source string) []Token {
-	var tokens []Token
-	sourceLen := len(source)
-	current := 0
-	line := 1
+func isAtEnd() bool {
+	return scanner.Current >= scanner.SourceLength
+}
 
-	// current is the actual token we are looking at.
-	for current < sourceLen {
-		// We are at the beginning of the next lexeme.
-		token, l, _ := ScanToken(source, current, line)
-
-		// ignore new lines, but increment line number for error reporting
-		if token != (Token{}) {
-			if token.Type != NEWLINE {
-				tokens = append(tokens, token)
-			} else {
-				line += 1
-			}
+func readString() (ErrorToken, Token) {
+	for {
+		if isAtEnd() {
+			return errorToken("Unterminated string."), Token{}
 		}
 
-		current += l
-		//fmt.Printf("Read %s with length %d\n. Current [%d]", token.Lexeme, l, current)
-
-		if token.Type == EOF {
+		if peek() == '"' {
 			break
+		}
+
+		if peek() == '\n' {
+			scanner.Line++
+		}
+		advance()
+	}
+
+	if isAtEnd() {
+		return errorToken("Unterminated string."), Token{}
+	}
+	token := MakeToken(TOKEN_STRING)
+
+	advance() // to advance past the closing "
+	return ErrorToken{}, token
+}
+
+func peekNext() rune {
+	if scanner.Current+1 >= scanner.SourceLength {
+		return '\000'
+	}
+
+	return scanner.Source[scanner.Current+1]
+}
+
+func readNumber() Token {
+	for {
+		if isAtEnd() || !IsDigit(peek()) {
+			break
+		}
+		advance()
+	}
+
+	if isAtEnd() {
+		return MakeToken(TOKEN_NUMBER)
+	}
+	if peek() == '.' && IsDigit(peekNext()) {
+		advance()
+
+		for {
+			if isAtEnd() || !IsDigit(peek()) {
+				break
+			}
+			advance()
 		}
 	}
 
-	return tokens
+	return MakeToken(TOKEN_NUMBER)
+}
+
+func errorToken(message string) ErrorToken {
+	return ErrorToken{
+		TOKEN_ERROR,
+		message,
+		scanner.Line,
+	}
+}
+
+func InitScanner(source string) {
+	scanner.Source = []rune(source)
+	scanner.SourceLength = len(source)
+	scanner.Current = 0
+	scanner.Start = 0
+	scanner.Line = 1
+}
+
+func ScanToken() (ErrorToken, Token) {
+	scanner.Start = scanner.Current
+	SkipWhitespace()
+	if scanner.Current >= scanner.SourceLength {
+		return ErrorToken{}, MakeToken(TOKEN_EOF)
+	}
+
+	c := advance()
+
+	if IsDigit(c) {
+		return ErrorToken{}, readNumber()
+	}
+
+	switch c {
+	case '(':
+		return ErrorToken{}, MakeToken(TOKEN_LEFT_PAREN)
+	case ')':
+		return ErrorToken{}, MakeToken(TOKEN_RIGHT_PAREN)
+	case '{':
+		return ErrorToken{}, MakeToken(TOKEN_LEFT_BRACE)
+	case '}':
+		return ErrorToken{}, MakeToken(TOKEN_RIGHT_BRACE)
+	case ',':
+		return ErrorToken{}, MakeToken(TOKEN_COMMA)
+	case '.':
+		return ErrorToken{}, MakeToken(TOKEN_DOT)
+	case '-':
+		return ErrorToken{}, MakeToken(TOKEN_MINUS)
+	case '+':
+		return ErrorToken{}, MakeToken(TOKEN_PLUS)
+	case ';':
+		return ErrorToken{}, MakeToken(TOKEN_SEMICOLON)
+	case '=':
+		if peek() == '=' {
+			advance()
+			return ErrorToken{}, MakeToken(TOKEN_EQUAL_EQUAL)
+		} else {
+			return ErrorToken{}, MakeToken(TOKEN_EQUAL)
+		}
+	}
+
+	return errorToken("Unexpected character."), Token{}
 }

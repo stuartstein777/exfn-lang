@@ -1,73 +1,76 @@
 package frontend
 
-import "fmt"
-
 type TokenType int
 
 const (
 	// Single-character tokens.
-	LEFT_PAREN TokenType = iota
-	RIGHT_PAREN
-	LEFT_BRACE
-	RIGHT_BRACE
-	LEFT_SQUARE_BRACKET
-	RIGHT_SQUARE_BRACKET
-	COMMA
-	DOT
-	MINUS
-	PLUS
-	SEMICOLON
-	SLASH
-	STAR
-	PERCENT
+	TOKEN_LEFT_PAREN TokenType = iota
+	TOKEN_RIGHT_PAREN
+	TOKEN_LEFT_BRACE
+	TOKEN_RIGHT_BRACE
+	TOKEN_LEFT_SQUARE_BRACKET
+	TOKEN_RIGHT_SQUARE_BRACKET
+	TOKEN_COMMA
+	TOKEN_DOT
+	TOKEN_MINUS
+	TOKEN_PLUS
+	TOKEN_SEMICOLON
+	TOKEN_SLASH
+	TOKEN_STAR
+	TOKEN_PERCENT
 
 	// One or two character tokens.
-	BANG
-	BANG_EQUAL
-	EQUAL
-	EQUAL_EQUAL
-	GREATER
-	GREATER_EQUAL
-	LESS
-	LESS_EQUAL
+	TOKEN_BANG
+	TOKEN_BANG_EQUAL
+	TOKEN_EQUAL
+	TOKEN_EQUAL_EQUAL
+	TOKEN_GREATER
+	TOKEN_GREATER_EQUAL
+	TOKEN_LESS
+	TOKEN_LESS_EQUAL
 
 	// Literals.
-	IDENTIFIER
-	STRING
-	NUMBER
+	TOKEN_IDENTIFIER
+	TOKEN_STRING
+	TOKEN_NUMBER
 
 	// Keywords.
-	AND
-	CLASS
-	ELSE
-	FALSE
-	FUNC
-	FOR
-	IF
-	NIL
-	OR
-	PRINT
-	RETURN
-	SUPER
-	THIS
-	TRUE
-	VAR
-	WHILE
+	TOKEN_AND
+	TOKEN_CLASS
+	TOKEN_ELSE
+	TOKEN_FALSE
+	TOKEN_FUNC
+	TOKEN_FOR
+	TOKEN_IF
+	TOKEN_NIL
+	TOKEN_OR
+	TOKEN_PRINT
+	TOKEN_RETURN
+	TOKEN_SUPER
+	TOKEN_THIS
+	TOKEN_TRUE
+	TOKEN_VAR
+	TOKEN_WHILE
 
-	NEWLINE
+	TOKEN_NEWLINE
 
-	EOF
+	TOKEN_EOF
+	TOKEN_ERROR
 )
 
 type Token struct {
-	Type    TokenType
-	Lexeme  string
-	Literal interface{}
-	Line    int
-	Length  int
-	//Location int //TODO: Unused (for error reporting)
+	Type   TokenType
+	Start  int
+	Length int
+	Line   int
 }
 
-func (t Token) ToString() string {
-	return fmt.Sprint(t.Type, " ", t.Lexeme, " ", t.Literal)
+type ErrorToken struct {
+	Type    TokenType
+	Message string
+	Line    int
 }
+
+// func (t Token) ToString() string {
+// 	return fmt.Sprint(t.Type, " ", t.Lexeme, " ", t.Literal)
+// }
