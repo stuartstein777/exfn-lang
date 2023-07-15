@@ -137,8 +137,9 @@ func InitScanner(source string) {
 }
 
 func ScanToken() (ErrorToken, Token) {
-	scanner.Start = scanner.Current
 	SkipWhitespace()
+	scanner.Start = scanner.Current
+
 	if scanner.Current >= scanner.SourceLength {
 		return ErrorToken{}, MakeToken(TOKEN_EOF)
 	}

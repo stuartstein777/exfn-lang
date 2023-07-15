@@ -244,11 +244,22 @@ func TestScanToken(t *testing.T) {
 
 	tk := string(scanner.Source[token.Start : token.Start+token.Length])
 
+	if token.Start != 0 {
+		t.Errorf("Expected start 0, got %v", token.Start)
+	}
+
+	if token.Length != 8 {
+		t.Errorf("Expected length 8, got %v", token.Length)
+	}
 	if tk != "1234.567" {
 		t.Errorf("Expected '1234.567', got _%v_", tk)
 	}
 
 	_, token = ScanToken()
+
+	if token.Start != 9 {
+		t.Errorf("Expected start 9, got %v", token.Start)
+	}
 
 	tk = string(scanner.Source[token.Start : token.Start+token.Length])
 
