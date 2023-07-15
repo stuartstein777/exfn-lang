@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	fe "github.com/stuartstein777/exfnlang/frontend"
 	h "github.com/stuartstein777/exfnlang/helpers"
 	vm "github.com/stuartstein777/exfnlang/vm"
@@ -12,11 +10,64 @@ func main() {
 	//DebugTesting1()
 	//DebugTesting2()
 
-	if len(os.Args) > 1 {
-		fe.RunFile(os.Args[1])
-	} else {
-		fe.Repl()
-	}
+	// if len(os.Args) > 1 {
+	// 	fe.RunFile(os.Args[1])
+	// } else {
+	// 	fe.Repl()
+	// }
+
+	fe.InitScanner(
+		`1234.567 * 789 
+	= 987654;
+	// this is a comment
+	987-654=333;`)
+	fe.ScanToken()
+	tk := fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
+
+	fe.ScanToken()
+	tk = fe.GetToken()
+	println(tk)
 }
 
 func DebugTesting2() {

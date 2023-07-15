@@ -10,8 +10,12 @@ type Scanner struct {
 
 var (
 	scanner Scanner = Scanner{[]rune{}, 0, 0, 0, 1}
+	S               = scanner
 )
 
+func GetToken() string {
+	return string(scanner.Source[scanner.Start:scanner.Current])
+}
 func peek() rune {
 	return scanner.Source[scanner.Current]
 }
@@ -52,6 +56,12 @@ func SkipWhitespace() {
 		case '\n':
 			scanner.Line++
 			advance()
+		case '/':
+			if peekNext() == '/' {
+				for peek() != '\n' && !isAtEnd() {
+					advance()
+				}
+			}
 		default:
 			return
 		}
@@ -167,8 +177,11 @@ func ScanToken() (ErrorToken, Token) {
 		return ErrorToken{}, MakeToken(TOKEN_MINUS)
 	case '+':
 		return ErrorToken{}, MakeToken(TOKEN_PLUS)
+	case '*':
+		return ErrorToken{}, MakeToken(TOKEN_STAR)
 	case ';':
 		return ErrorToken{}, MakeToken(TOKEN_SEMICOLON)
+	// = can be == or =
 	case '=':
 		if peek() == '=' {
 			advance()
@@ -176,7 +189,17 @@ func ScanToken() (ErrorToken, Token) {
 		} else {
 			return ErrorToken{}, MakeToken(TOKEN_EQUAL)
 		}
+	// ! can be != or !
+	case '!':
+		if peek() == '=' {
+			advance()
+			return ErrorToken{}, MakeToken(TOKEN_BANG_EQUAL)
+		} else {
+			return ErrorToken{}, MakeToken(TOKEN_BANG)
+		}
+	case '/':
+		return ErrorToken{}, MakeToken(TOKEN_SLASH)
 	}
 
-	return errorToken("Unexpected character."), Token{}
+	return ErrorToken{}, Token{}
 }

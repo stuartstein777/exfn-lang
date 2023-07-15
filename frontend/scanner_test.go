@@ -296,3 +296,83 @@ func TestScanToken(t *testing.T) {
 		t.Errorf("Expected ';', got %v", tk)
 	}
 }
+
+func TestScanTokenWithNewLinesAndComments(t *testing.T) {
+	InitScanner(
+		`1234.567 * 789 
+	= 987654;
+	// this is a comment
+	987-654=333;`)
+	_, token := ScanToken()
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "1234.567" {
+		t.Errorf("Expected '1234.567', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "*" {
+		t.Errorf("Expected '*', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "789" {
+		t.Errorf("Expected '789', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "=" {
+		t.Errorf("Expected '=', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "987654" {
+		t.Errorf("Expected '987654', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != ";" {
+		t.Errorf("Expected ';', got _%v_", tk)
+	}
+
+	//_, token = ScanToken()
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "987" {
+		t.Errorf("Expected '987', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "-" {
+		t.Errorf("Expected '-', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "654" {
+		t.Errorf("Expected '654', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "=" {
+		t.Errorf("Expected '=', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "333" {
+		t.Errorf("Expected '333', got _%v_", tk)
+	}
+
+	_, token = ScanToken()
+	tk = string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != ";" {
+		t.Errorf("Expected ';', got _%v_", tk)
+	}
+}
