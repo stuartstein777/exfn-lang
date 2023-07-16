@@ -614,3 +614,91 @@ func TestWhileReturnsWhileIdentifier(t *testing.T) {
 		t.Errorf("Expected 'while', got _%v_", tk)
 	}
 }
+
+func TestScanningPortionOfSourceCode(t *testing.T) {
+	InitScanner(`fun foo()
+	{
+		var x = 5;
+		print(x);
+	}`)
+
+	_, token := ScanToken()
+	if token.Type != TOKEN_FUN {
+		t.Errorf("Expected fun, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_IDENTIFIER {
+		t.Errorf("Expected foo, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_LEFT_PAREN {
+		t.Errorf("Expected (, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_RIGHT_PAREN {
+		t.Errorf("Expected ), got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_LEFT_BRACE {
+		t.Errorf("Expected {, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_VAR {
+		t.Errorf("Expected var, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_IDENTIFIER {
+		t.Errorf("Expected Identifer, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_EQUAL {
+		t.Errorf("Expected =, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_NUMBER {
+		t.Errorf("Expected number, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_SEMICOLON {
+		t.Errorf("Expected ;, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_PRINT {
+		t.Errorf("Expected print, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_LEFT_PAREN {
+		t.Errorf("Expected (, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_IDENTIFIER {
+		t.Errorf("Expected Identifier, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_RIGHT_PAREN {
+		t.Errorf("Expected ), got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_SEMICOLON {
+		t.Errorf("Expected ;, got %v", token.Type)
+	}
+
+	_, token = ScanToken()
+	if token.Type != TOKEN_RIGHT_BRACE {
+		t.Errorf("Expected }, got %v", token.Type)
+	}
+}
