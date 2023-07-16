@@ -376,3 +376,241 @@ func TestScanTokenWithNewLinesAndComments(t *testing.T) {
 		t.Errorf("Expected ';', got _%v_", tk)
 	}
 }
+
+func TestFindingAndKeyword(t *testing.T) {
+	InitScanner("and")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_AND {
+		t.Errorf("Expected And, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "and" {
+		t.Errorf("Expected 'and', got _%v_", tk)
+	}
+}
+
+func TestFindingFalseKeyword(t *testing.T) {
+	InitScanner("false")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_FALSE {
+		t.Errorf("Expected False, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "false" {
+		t.Errorf("Expected 'false', got _%v_", tk)
+	}
+}
+
+func TestFindingForKeyword(t *testing.T) {
+	InitScanner("for")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_FOR {
+		t.Errorf("Expected for, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "for" {
+		t.Errorf("Expected 'for', got _%v_", tk)
+	}
+}
+
+func TestFortReturnsIdentifier(t *testing.T) {
+	InitScanner("fort")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_IDENTIFIER {
+		t.Errorf("Expected fort, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "fort" {
+		t.Errorf("Expected 'fort', got _%v_", tk)
+	}
+}
+
+func TestFunReturnsFunKeyword(t *testing.T) {
+	InitScanner("fun")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_FUN {
+		t.Errorf("Expected fun, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "fun" {
+		t.Errorf("Expected 'fun', got _%v_", tk)
+	}
+}
+
+func TestOrReturnsOrKeyword(t *testing.T) {
+	InitScanner("or")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_OR {
+		t.Errorf("Expected or, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "or" {
+		t.Errorf("Expected 'or', got _%v_", tk)
+	}
+}
+
+func TestClassReturnsClassKeyword(t *testing.T) {
+	InitScanner("class")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_CLASS {
+		t.Errorf("Expected class, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "class" {
+		t.Errorf("Expected 'class', got _%v_", tk)
+	}
+}
+
+func TestClassesReturnsClassesIdentifier(t *testing.T) {
+	InitScanner("classes")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_IDENTIFIER {
+		t.Errorf("Expected classes, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "classes" {
+		t.Errorf("Expected 'classes', got _%v_", tk)
+	}
+}
+
+func TestClasReturnsClasIdentifier(t *testing.T) {
+	InitScanner("clas")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_IDENTIFIER {
+		t.Errorf("Expected clas, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "clas" {
+		t.Errorf("Expected 'clas', got _%v_", tk)
+	}
+}
+
+func TestIfReturnsIfIdentifier(t *testing.T) {
+	InitScanner("if")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_IF {
+		t.Errorf("Expected if, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "if" {
+		t.Errorf("Expected 'if', got _%v_", tk)
+	}
+}
+
+func TestPrintReturnsPrintIdentifier(t *testing.T) {
+	InitScanner("print")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_PRINT {
+		t.Errorf("Expected print, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "print" {
+		t.Errorf("Expected 'print', got _%v_", tk)
+	}
+}
+
+func TestReturnReturnsReturnIdentifier(t *testing.T) {
+	InitScanner("return")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_RETURN {
+		t.Errorf("Expected return, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "return" {
+		t.Errorf("Expected 'return', got _%v_", tk)
+	}
+}
+
+func TestSuperReturnsSuperIdentifier(t *testing.T) {
+	InitScanner("super")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_SUPER {
+		t.Errorf("Expected super, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "super" {
+		t.Errorf("Expected 'super', got _%v_", tk)
+	}
+}
+
+func TestThisReturnsThisIdentifier(t *testing.T) {
+	InitScanner("this")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_THIS {
+		t.Errorf("Expected this, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "this" {
+		t.Errorf("Expected 'this', got _%v_", tk)
+	}
+}
+
+func TestTrueReturnsTrueIdentifier(t *testing.T) {
+	InitScanner("true")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_TRUE {
+		t.Errorf("Expected true, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "true" {
+		t.Errorf("Expected 'true', got _%v_", tk)
+	}
+}
+
+func TestVarReturnsVarIdentifier(t *testing.T) {
+	InitScanner("var")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_VAR {
+		t.Errorf("Expected var, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "var" {
+		t.Errorf("Expected 'var', got _%v_", tk)
+	}
+}
+
+func TestWhileReturnsWhileIdentifier(t *testing.T) {
+	InitScanner("while")
+	_, token := ScanToken()
+
+	if token.Type != TOKEN_WHILE {
+		t.Errorf("Expected while, got %v", token.Type)
+	}
+
+	tk := string(scanner.Source[token.Start : token.Start+token.Length])
+	if tk != "while" {
+		t.Errorf("Expected 'while', got _%v_", tk)
+	}
+}

@@ -130,6 +130,75 @@ func readNumber() Token {
 	return MakeToken(TOKEN_NUMBER)
 }
 
+func checkKeyword(start int, length int, rest string, tokenType TokenType) TokenType {
+	if scanner.Current-scanner.Start == start+length &&
+		string(scanner.Source[scanner.Start+start:scanner.Start+start+length]) == rest {
+		return tokenType
+	}
+
+	return TOKEN_IDENTIFIER
+}
+
+func identifierType() TokenType {
+	switch scanner.Source[scanner.Start] {
+	case 'a':
+		return checkKeyword(1, 2, "nd", TOKEN_AND)
+	case 'c':
+		return checkKeyword(1, 4, "lass", TOKEN_CLASS)
+	case 'e':
+		return checkKeyword(1, 3, "lse", TOKEN_ELSE)
+	case 'f':
+		if scanner.Current-scanner.Start > 1 {
+			switch scanner.Source[scanner.Start+1] {
+			case 'a':
+				return checkKeyword(2, 3, "lse", TOKEN_FALSE)
+			case 'o':
+				return checkKeyword(2, 1, "r", TOKEN_FOR)
+			case 'u':
+				return checkKeyword(2, 1, "n", TOKEN_FUN)
+			}
+		}
+	case 'i':
+		return checkKeyword(1, 1, "f", TOKEN_IF)
+	case 'n':
+		return checkKeyword(1, 2, "il", TOKEN_NIL)
+	case 'o':
+		return checkKeyword(1, 1, "r", TOKEN_OR)
+	case 'p':
+		return checkKeyword(1, 4, "rint", TOKEN_PRINT)
+	case 'r':
+		return checkKeyword(1, 5, "eturn", TOKEN_RETURN)
+	case 's':
+		return checkKeyword(1, 4, "uper", TOKEN_SUPER)
+	case 't':
+		if scanner.Current-scanner.Start > 1 {
+			switch scanner.Source[scanner.Start+1] {
+			case 'h':
+				return checkKeyword(2, 2, "is", TOKEN_THIS)
+			case 'r':
+				return checkKeyword(2, 2, "ue", TOKEN_TRUE)
+			}
+		}
+	case 'v':
+		return checkKeyword(1, 2, "ar", TOKEN_VAR)
+	case 'w':
+		return checkKeyword(1, 4, "hile", TOKEN_WHILE)
+	}
+
+	return TOKEN_IDENTIFIER
+}
+
+func readIdentifier() Token {
+	for {
+		if isAtEnd() || !IsAlpha(peek()) {
+			break
+		}
+		advance()
+	}
+
+	return MakeToken(identifierType())
+}
+
 func errorToken(message string) ErrorToken {
 	return ErrorToken{
 		TOKEN_ERROR,
@@ -155,6 +224,10 @@ func ScanToken() (ErrorToken, Token) {
 	}
 
 	c := advance()
+
+	if IsAlpha(c) {
+		return ErrorToken{}, readIdentifier()
+	}
 
 	if IsDigit(c) {
 		return ErrorToken{}, readNumber()
