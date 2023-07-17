@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	h "github.com/stuartstein777/exfnlang/helpers"
+	t "github.com/stuartstein777/exfnlang/types"
 )
 
 func printStack(vm *VM) {
@@ -20,7 +21,7 @@ func simpleInstruction(name string, offset int) int {
 	return offset + 1
 }
 
-func constantInstruction(name string, chunk Chunk, offset int) int {
+func constantInstruction(name string, chunk t.Chunk, offset int) int {
 	constantIdx := chunk.Code[offset+1]
 	fmt.Printf("%-16s %4d '", name, constantIdx)
 	fmt.Printf("%g", chunk.Constants[constantIdx])
@@ -28,7 +29,7 @@ func constantInstruction(name string, chunk Chunk, offset int) int {
 	return offset + 2
 }
 
-func constantLongInstruction(name string, chunk Chunk, offset int) int {
+func constantLongInstruction(name string, chunk t.Chunk, offset int) int {
 	constantIdx := binary.BigEndian.Uint32(chunk.Code[offset+1 : offset+5])
 	fmt.Printf("%-16s %4d '", name, constantIdx)
 	fmt.Printf("%g", chunk.Constants[constantIdx])
@@ -36,7 +37,7 @@ func constantLongInstruction(name string, chunk Chunk, offset int) int {
 	return offset + 5
 }
 
-func DisassembleChunk(chunk Chunk, name string) {
+func DisassembleChunk(chunk t.Chunk, name string) {
 	fmt.Printf("== %s ==\n", name)
 	fmt.Printf("Code:%v\n", chunk.Code)
 	codeLength := len(chunk.Code)
@@ -47,7 +48,7 @@ func DisassembleChunk(chunk Chunk, name string) {
 	fmt.Printf("\n")
 }
 
-func disassembleInstruction(chunk Chunk, offset int) int {
+func disassembleInstruction(chunk t.Chunk, offset int) int {
 	fmt.Printf("%04d ", offset)
 	instruction := chunk.Code[offset]
 

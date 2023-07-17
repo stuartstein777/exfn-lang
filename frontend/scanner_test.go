@@ -6,7 +6,7 @@ import (
 )
 
 func TestPeek(t *testing.T) {
-	InitScanner("hello")
+	InitScanner([]rune("hello"))
 
 	c := peek()
 
@@ -44,7 +44,7 @@ func TestIsAlpha(t *testing.T) {
 }
 
 func TestAdvance(t *testing.T) {
-	InitScanner("hello")
+	InitScanner([]rune("hello"))
 
 	c := advance()
 
@@ -66,7 +66,7 @@ func TestAdvance(t *testing.T) {
 }
 
 func TestSkipWhiteSpace(t *testing.T) {
-	InitScanner(" \t\r\nx")
+	InitScanner([]rune(" \t\r\nx"))
 
 	SkipWhitespace()
 
@@ -78,7 +78,7 @@ func TestSkipWhiteSpace(t *testing.T) {
 }
 
 func TestReadString(t *testing.T) {
-	InitScanner(`func foo(){var x = "hello, world";}`)
+	InitScanner([]rune(`func foo(){var x = "hello, world";}`))
 	scanner.Current = 20
 	scanner.Start = 20
 	_, token := readString()
@@ -108,7 +108,7 @@ func TestReadString(t *testing.T) {
 }
 
 func TestReadString2(t *testing.T) {
-	InitScanner(`x = "hello, world"`)
+	InitScanner([]rune(`x = "hello, world"`))
 	scanner.Start = 5
 	scanner.Current = 5
 	_, token := readString()
@@ -137,7 +137,7 @@ func TestReadString2(t *testing.T) {
 }
 
 func TestReadStringExpectUnterminatedStringError(t *testing.T) {
-	InitScanner(`x = "hello, world`)
+	InitScanner([]rune(`x = "hello, world`))
 	scanner.Start = 5
 	scanner.Current = 5
 	errorToken, _ := readString()
@@ -152,7 +152,7 @@ func TestReadStringExpectUnterminatedStringError(t *testing.T) {
 }
 
 func TestReadNumber(t *testing.T) {
-	InitScanner("x = 1234;")
+	InitScanner([]rune("x = 1234;"))
 	scanner.Current = 4
 	scanner.Start = 4
 	token := readNumber()
@@ -181,7 +181,7 @@ func TestReadNumber(t *testing.T) {
 }
 
 func TestReadNumberNumberEndsAtEndOfSource(t *testing.T) {
-	InitScanner("x = 1234")
+	InitScanner([]rune("x = 1234"))
 	scanner.Start = 4
 	scanner.Current = 4
 	token := readNumber()
@@ -210,7 +210,7 @@ func TestReadNumberNumberEndsAtEndOfSource(t *testing.T) {
 }
 
 func TestReadNumberWithDecimal(t *testing.T) {
-	InitScanner("x = 1234.567;")
+	InitScanner([]rune("x = 1234.567;"))
 	scanner.Start = 4
 	scanner.Current = 4
 	token := readNumber()
@@ -239,7 +239,7 @@ func TestReadNumberWithDecimal(t *testing.T) {
 }
 
 func TestScanToken(t *testing.T) {
-	InitScanner("1234.567 + 789 = 987654;")
+	InitScanner([]rune("1234.567 + 789 = 987654;"))
 	_, token := ScanToken()
 
 	tk := string(scanner.Source[token.Start : token.Start+token.Length])
@@ -298,11 +298,11 @@ func TestScanToken(t *testing.T) {
 }
 
 func TestScanTokenWithNewLinesAndComments(t *testing.T) {
-	InitScanner(
+	InitScanner([]rune(
 		`1234.567 * 789 
 	= 987654;
 	// this is a comment
-	987-654=333;`)
+	987-654=333;`))
 	_, token := ScanToken()
 	tk := string(scanner.Source[token.Start : token.Start+token.Length])
 	if tk != "1234.567" {
@@ -378,7 +378,7 @@ func TestScanTokenWithNewLinesAndComments(t *testing.T) {
 }
 
 func TestFindingAndKeyword(t *testing.T) {
-	InitScanner("and")
+	InitScanner([]rune("and"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_AND {
@@ -392,7 +392,7 @@ func TestFindingAndKeyword(t *testing.T) {
 }
 
 func TestFindingFalseKeyword(t *testing.T) {
-	InitScanner("false")
+	InitScanner([]rune("false"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_FALSE {
@@ -406,7 +406,7 @@ func TestFindingFalseKeyword(t *testing.T) {
 }
 
 func TestFindingForKeyword(t *testing.T) {
-	InitScanner("for")
+	InitScanner([]rune("for"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_FOR {
@@ -420,7 +420,7 @@ func TestFindingForKeyword(t *testing.T) {
 }
 
 func TestFortReturnsIdentifier(t *testing.T) {
-	InitScanner("fort")
+	InitScanner([]rune("fort"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_IDENTIFIER {
@@ -434,7 +434,7 @@ func TestFortReturnsIdentifier(t *testing.T) {
 }
 
 func TestFunReturnsFunKeyword(t *testing.T) {
-	InitScanner("fun")
+	InitScanner([]rune("fun"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_FUN {
@@ -448,7 +448,7 @@ func TestFunReturnsFunKeyword(t *testing.T) {
 }
 
 func TestOrReturnsOrKeyword(t *testing.T) {
-	InitScanner("or")
+	InitScanner([]rune("or"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_OR {
@@ -462,7 +462,7 @@ func TestOrReturnsOrKeyword(t *testing.T) {
 }
 
 func TestClassReturnsClassKeyword(t *testing.T) {
-	InitScanner("class")
+	InitScanner([]rune("class"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_CLASS {
@@ -476,7 +476,7 @@ func TestClassReturnsClassKeyword(t *testing.T) {
 }
 
 func TestClassesReturnsClassesIdentifier(t *testing.T) {
-	InitScanner("classes")
+	InitScanner([]rune("classes"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_IDENTIFIER {
@@ -490,7 +490,7 @@ func TestClassesReturnsClassesIdentifier(t *testing.T) {
 }
 
 func TestClasReturnsClasIdentifier(t *testing.T) {
-	InitScanner("clas")
+	InitScanner([]rune("clas"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_IDENTIFIER {
@@ -504,7 +504,7 @@ func TestClasReturnsClasIdentifier(t *testing.T) {
 }
 
 func TestIfReturnsIfIdentifier(t *testing.T) {
-	InitScanner("if")
+	InitScanner([]rune("if"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_IF {
@@ -518,7 +518,7 @@ func TestIfReturnsIfIdentifier(t *testing.T) {
 }
 
 func TestPrintReturnsPrintIdentifier(t *testing.T) {
-	InitScanner("print")
+	InitScanner([]rune("print"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_PRINT {
@@ -532,7 +532,7 @@ func TestPrintReturnsPrintIdentifier(t *testing.T) {
 }
 
 func TestReturnReturnsReturnIdentifier(t *testing.T) {
-	InitScanner("return")
+	InitScanner([]rune("return"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_RETURN {
@@ -546,7 +546,7 @@ func TestReturnReturnsReturnIdentifier(t *testing.T) {
 }
 
 func TestSuperReturnsSuperIdentifier(t *testing.T) {
-	InitScanner("super")
+	InitScanner([]rune("super"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_SUPER {
@@ -560,7 +560,7 @@ func TestSuperReturnsSuperIdentifier(t *testing.T) {
 }
 
 func TestThisReturnsThisIdentifier(t *testing.T) {
-	InitScanner("this")
+	InitScanner([]rune("this"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_THIS {
@@ -574,7 +574,7 @@ func TestThisReturnsThisIdentifier(t *testing.T) {
 }
 
 func TestTrueReturnsTrueIdentifier(t *testing.T) {
-	InitScanner("true")
+	InitScanner([]rune("true"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_TRUE {
@@ -588,7 +588,7 @@ func TestTrueReturnsTrueIdentifier(t *testing.T) {
 }
 
 func TestVarReturnsVarIdentifier(t *testing.T) {
-	InitScanner("var")
+	InitScanner([]rune("var"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_VAR {
@@ -602,7 +602,7 @@ func TestVarReturnsVarIdentifier(t *testing.T) {
 }
 
 func TestWhileReturnsWhileIdentifier(t *testing.T) {
-	InitScanner("while")
+	InitScanner([]rune("while"))
 	_, token := ScanToken()
 
 	if token.Type != TOKEN_WHILE {
@@ -616,11 +616,12 @@ func TestWhileReturnsWhileIdentifier(t *testing.T) {
 }
 
 func TestScanningPortionOfSourceCode(t *testing.T) {
-	InitScanner(`fun foo()
+	src := `fun foo()
 	{
 		var x = 5;
 		print(x);
-	}`)
+	}`
+	InitScanner([]rune(src))
 
 	_, token := ScanToken()
 	if token.Type != TOKEN_FUN {

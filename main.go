@@ -1,96 +1,47 @@
 package main
 
 import (
+	"os"
+
 	fe "github.com/stuartstein777/exfnlang/frontend"
 	h "github.com/stuartstein777/exfnlang/helpers"
-	vm "github.com/stuartstein777/exfnlang/vm"
+	t "github.com/stuartstein777/exfnlang/types"
+	vmn "github.com/stuartstein777/exfnlang/vm"
 )
 
 func main() {
 	//DebugTesting1()
 	//DebugTesting2()
 
-	// if len(os.Args) > 1 {
-	// 	fe.RunFile(os.Args[1])
-	// } else {
-	// 	fe.Repl()
-	// }
+	if len(os.Args) > 1 {
+		fe.RunFile(os.Args[1])
+	} else {
+		fe.Repl()
+	}
 
-	fe.InitScanner(
-		`1234.567 * 789 
-	= 987654;
-	// this is a comment
-	987-654=333;`)
-	fe.ScanToken()
-	tk := fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
-
-	fe.ScanToken()
-	tk = fe.GetToken()
-	println(tk)
 }
 
 func DebugTesting2() {
-	chunk := vm.Chunk{
+	chunk := t.Chunk{
 		Code:        []byte{},
 		LineNumbers: []int{},
-		Constants:   []vm.Value{},
+		Constants:   []t.Value{},
 	}
 
-	vm.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 0, 1)
-	vm.AddConstant(&chunk, 3, 1)
-	vm.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 1, 1)
-	vm.AddConstant(&chunk, 2, 1)
-	vm.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 2, 1)
-	vm.AddConstant(&chunk, 1, 1)
-	vm.WriteNZeroConstants(&chunk, 1022)
-	vm.WriteLongConstantToChunk(&chunk, h.OP_CONSTANT_LONG, 1024, 2)
-	vm.AddConstant(&chunk, 912, 2)
-	vm.WriteToChunk(&chunk, h.OP_NEGATE, 3)
-	vm.WriteToChunk(&chunk, h.OP_ADD, 2)
-	vm.WriteToChunk(&chunk, h.OP_RETURN, 4)
+	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 0, 1)
+	t.AddConstant(&chunk, 3, 1)
+	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 1, 1)
+	t.AddConstant(&chunk, 2, 1)
+	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 2, 1)
+	t.AddConstant(&chunk, 1, 1)
+	t.WriteNZeroConstants(&chunk, 1022)
+	t.WriteLongConstantToChunk(&chunk, h.OP_CONSTANT_LONG, 1024, 2)
+	t.AddConstant(&chunk, 912, 2)
+	t.WriteToChunk(&chunk, h.OP_NEGATE, 3)
+	t.WriteToChunk(&chunk, h.OP_ADD, 2)
+	t.WriteToChunk(&chunk, h.OP_RETURN, 4)
 
-	curVm := vm.VM{
+	curVm := vmn.VM{
 		Chunk: &chunk,
 		IP:    0,
 	}
@@ -100,7 +51,7 @@ func DebugTesting2() {
 	//fmt.Printf("%v\n", chunk)
 	//vm.DisassembleChunk(chunk, "Test chunk")
 
-	vm.Run(&curVm)
+	vmn.Run(&curVm)
 }
 
 func DebugTesting1() {
@@ -110,23 +61,23 @@ func DebugTesting1() {
 		Constants:   []vm.Value{},
 	}
 
-	vm.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 0, 1)
-	vm.AddConstant(&chunk, 3, 1)
-	vm.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 1, 1)
-	vm.AddConstant(&chunk, 2, 1)
-	vm.WriteToChunk(&chunk, h.OP_MULTIPLY, 1)
-	vm.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 2, 1)
-	vm.AddConstant(&chunk, 4, 1)
-	vm.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 3, 1)
-	vm.AddConstant(&chunk, 5, 1)
-	vm.WriteToChunk(&chunk, h.OP_DIVIDE, 1)
-	vm.WriteToChunk(&chunk, h.OP_SUBTRACT, 1)
-	vm.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 4, 1)
-	vm.AddConstant(&chunk, 1, 1)
-	vm.WriteToChunk(&chunk, h.OP_ADD, 1)
-	vm.WriteToChunk(&chunk, h.OP_RETURN, 2)
+	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 0, 1)
+	t.AddConstant(&chunk, 3, 1)
+	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 1, 1)
+	t.AddConstant(&chunk, 2, 1)
+	t.WriteToChunk(&chunk, h.OP_MULTIPLY, 1)
+	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 2, 1)
+	t.AddConstant(&chunk, 4, 1)
+	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 3, 1)
+	t.AddConstant(&chunk, 5, 1)
+	t.WriteToChunk(&chunk, h.OP_DIVIDE, 1)
+	t.WriteToChunk(&chunk, h.OP_SUBTRACT, 1)
+	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 4, 1)
+	t.AddConstant(&chunk, 1, 1)
+	t.WriteToChunk(&chunk, h.OP_ADD, 1)
+	t.WriteToChunk(&chunk, h.OP_RETURN, 2)
 
-	curVm := vm.VM{
+	curVm := vmn.VM{
 		Chunk: &chunk,
 		IP:    0,
 	}
@@ -136,5 +87,5 @@ func DebugTesting1() {
 	//fmt.Printf("%v\n", chunk)
 	//vm.DisassembleChunk(chunk, "Test chunk")
 
-	vm.Run(&curVm)
+	vmn.Run(&curVm)
 }

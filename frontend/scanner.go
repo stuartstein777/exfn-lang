@@ -207,8 +207,8 @@ func errorToken(message string) ErrorToken {
 	}
 }
 
-func InitScanner(source string) {
-	scanner.Source = []rune(source)
+func InitScanner(source []rune) {
+	scanner.Source = source
 	scanner.SourceLength = len(source)
 	scanner.Current = 0
 	scanner.Start = 0

@@ -4,29 +4,28 @@ import (
 	"encoding/binary"
 
 	h "github.com/stuartstein777/exfnlang/helpers"
+	t "github.com/stuartstein777/exfnlang/types"
 )
 
 const Debugging = true
 const StackMax = 256
 
-type Value = float64
-
 // --------------- The VM -----------------//
 type VM struct {
-	Chunk *Chunk
+	Chunk *t.Chunk
 	/* TODO Want the IP as a pointer so that we can increment it.
 	and deref straight into the chunk.*/
 	IP       int
-	Stack    [StackMax]Value
+	Stack    [StackMax]t.Value
 	StackPtr int
 }
 
-func (vm *VM) Push(value Value) {
+func (vm *VM) Push(value t.Value) {
 	vm.Stack[vm.StackPtr] = value
 	vm.StackPtr++
 }
 
-func (vm *VM) Pop() Value {
+func (vm *VM) Pop() t.Value {
 	vm.StackPtr--
 	return vm.Stack[vm.StackPtr]
 }
