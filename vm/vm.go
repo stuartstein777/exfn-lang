@@ -2,6 +2,7 @@ package vm
 
 import (
 	"encoding/binary"
+	"fmt"
 
 	h "github.com/stuartstein777/exfnlang/helpers"
 	t "github.com/stuartstein777/exfnlang/types"
@@ -73,6 +74,8 @@ func Negate(vm *VM) {
 }
 
 func Run(vm *VM) int {
+	fmt.Printf("In vm.run()\n")
+
 	for {
 		if Debugging {
 			disassembleInstruction(*vm.Chunk, vm.IP)

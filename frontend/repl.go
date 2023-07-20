@@ -7,6 +7,7 @@ import (
 )
 
 func Repl() {
+	//interpret([]rune("1 + 2 * 4"))
 	for {
 		fmt.Printf("> ")
 

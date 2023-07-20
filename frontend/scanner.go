@@ -1,5 +1,7 @@
 package frontend
 
+import "fmt"
+
 type Scanner struct {
 	Source       []rune
 	SourceLength int
@@ -14,17 +16,21 @@ var (
 )
 
 func GetToken() string {
+	//fmt.Printf("In scanner.getToken()\n")
 	return string(scanner.Source[scanner.Start:scanner.Current])
 }
 func peek() rune {
+	fmt.Printf("In scanner.peek()\n")
 	return scanner.Source[scanner.Current]
 }
 
 // Read the next token and advance the scanner.
 func advance() rune {
+	fmt.Printf("In scanner.advance()\n")
 	scanner.Current++
-	return rune(scanner.Source[scanner.Current-1])
-
+	lexeme := rune(scanner.Source[scanner.Current-1])
+	fmt.Printf("advance() :: scanner.current = %v\n", string(lexeme))
+	return lexeme
 }
 
 func IsDigit(char rune) bool {
@@ -98,6 +104,7 @@ func readString() (ErrorToken, Token) {
 }
 
 func peekNext() rune {
+	fmt.Printf("In scanner.peekNext()\n")
 	if scanner.Current+1 >= scanner.SourceLength {
 		return '\000'
 	}
@@ -106,6 +113,7 @@ func peekNext() rune {
 }
 
 func readNumber() Token {
+	fmt.Printf("In scanner.number()\n")
 	for {
 		if isAtEnd() || !IsDigit(peek()) {
 			break
@@ -215,8 +223,25 @@ func InitScanner(source []rune) {
 	scanner.Line = 1
 }
 
+func match(expected rune) bool {
+	if isAtEnd() {
+		return false
+	}
+
+	if scanner.Source[scanner.Current] != expected {
+		return false
+	}
+
+	scanner.Current++
+	return true
+}
+
 func ScanToken() (ErrorToken, Token) {
+	fmt.Printf("In scanner.scanToken()\n")
 	SkipWhitespace()
+
+	fmt.Printf("scanToken:: scanner.start = %s\n", string(scanner.Source[scanner.Current]))
+
 	scanner.Start = scanner.Current
 
 	if scanner.Current >= scanner.SourceLength {
@@ -224,6 +249,8 @@ func ScanToken() (ErrorToken, Token) {
 	}
 
 	c := advance()
+
+	fmt.Printf("scanToken:: c = %v\n", string(rune(c)))
 
 	if IsAlpha(c) {
 		return ErrorToken{}, readIdentifier()
@@ -256,16 +283,13 @@ func ScanToken() (ErrorToken, Token) {
 		return ErrorToken{}, MakeToken(TOKEN_SEMICOLON)
 	// = can be == or =
 	case '=':
-		if peek() == '=' {
-			advance()
+		if match('=') {
 			return ErrorToken{}, MakeToken(TOKEN_EQUAL_EQUAL)
 		} else {
 			return ErrorToken{}, MakeToken(TOKEN_EQUAL)
 		}
-	// ! can be != or !
 	case '!':
-		if peek() == '=' {
-			advance()
+		if match('=') {
 			return ErrorToken{}, MakeToken(TOKEN_BANG_EQUAL)
 		} else {
 			return ErrorToken{}, MakeToken(TOKEN_BANG)
@@ -273,15 +297,13 @@ func ScanToken() (ErrorToken, Token) {
 	case '/':
 		return ErrorToken{}, MakeToken(TOKEN_SLASH)
 	case '>':
-		if peek() == '=' {
-			advance()
+		if match('=') {
 			return ErrorToken{}, MakeToken(TOKEN_GREATER_EQUAL)
 		} else {
 			return ErrorToken{}, MakeToken(TOKEN_GREATER)
 		}
 	case '<':
-		if peek() == '=' {
-			advance()
+		if match('=') {
 			return ErrorToken{}, MakeToken(TOKEN_LESS_EQUAL)
 		} else {
 			return ErrorToken{}, MakeToken(TOKEN_LESS)

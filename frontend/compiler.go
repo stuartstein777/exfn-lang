@@ -46,6 +46,7 @@ func currentChunk() *t.Chunk {
 }
 
 func Unary() {
+	fmt.Printf("In compiler.unary()\n")
 	operatorType := parser.Previous.Type
 
 	// Compile the operand.
@@ -61,6 +62,7 @@ func Unary() {
 }
 
 func Binary() {
+	fmt.Printf("In compiler.binary\n")
 	operatorType := parser.Previous.Type
 	rule := GetRule(operatorType)
 	parsePrecedence(rule.Precedence() + 1)
@@ -122,30 +124,51 @@ var rules = []ParseRule{
 }
 
 func Number() {
-	value, _ := strconv.ParseFloat(GetToken(), 32)
-
+	fmt.Printf("In compiler.number()\n")
+	token := GetToken()
+	value, _ := strconv.ParseFloat(token, 32)
+	fmt.Printf("Number:: value = %f\n", value)
 	// what to do on error here ?
 	emitConstant(value)
 }
 
 func GetRule(tokenType TokenType) ParseRule {
+	fmt.Printf("In compiler.getRule()\n")
 	return rules[tokenType]
 }
 
 func parsePrecedence(precedence int) {
-	advance()
+	fmt.Printf("In compiler.parsePrecedence()\n")
+	fmt.Printf("compiler.parsePrecedence :: precedence = %d\n", precedence)
+	advanceCompiler()
+	fmt.Printf("compiler.parsePrecedence :: parser.previous.type = %d\n", parser.Previous.Type)
 	prefixRule := GetRule(parser.Previous.Type).Prefix
 	if prefixRule() == nil {
 		errorAtCurrent("Expect expression.")
 		return
 	}
+
+	prefixRule()()
+
+	for {
+		currentPrecedence := GetRule(parser.Current.Type).Precedence()
+		if precedence <= currentPrecedence {
+			break
+		}
+		fmt.Printf("compiler.parsePrecedence :: Higher precedence: precedence = %d, currentPrecedence = %d\n", precedence, currentPrecedence)
+		advanceCompiler()
+		infixRule := GetRule(parser.Previous.Type).Infix
+		infixRule()()
+	}
 }
 
 func expression() {
+	fmt.Printf("In compiler.expression()\n")
 	parsePrecedence(PREC_ASSIGNMENT)
 }
 
 func interpret(source []rune) int {
+	fmt.Printf("In compiler.interpret()\n")
 	chunk := t.Chunk{}
 	initChunk(&chunk)
 
@@ -163,6 +186,7 @@ func interpret(source []rune) int {
 }
 
 func compile(source []rune, chunk *t.Chunk) bool {
+	fmt.Printf("In compiler.compile()\n")
 	InitScanner(source)
 	compilingChunk = chunk
 	parser.HadError = false
@@ -176,6 +200,7 @@ func compile(source []rune, chunk *t.Chunk) bool {
 
 // TODO: To build this out, it will be the basis for syntax checking and reporting syntax errors.
 func consume(tokenType TokenType, message string) {
+	fmt.Printf("In compiler.consume()\n")
 	if parser.Current.Type == tokenType {
 		advanceCompiler()
 		return
@@ -189,19 +214,24 @@ func endCompiler() {
 }
 
 func emitReturn() {
+	fmt.Printf("In compiler.emitReturn()\n")
 	emitByte(h.OP_RETURN)
 }
 
 func emitByte(byte byte) {
+	fmt.Printf("In compiler.emitByte()\n")
 	t.WriteToChunk(compilingChunk, byte, parser.Previous.Line)
 }
 
 func emitBytes(byte1 byte, byte2 byte) {
+	fmt.Printf("In compiler.emitBytes()\n")
 	emitByte(byte1)
 	emitByte(byte2)
 }
 
 func makeConstant(value t.Value) byte {
+	fmt.Printf("In compiler.makeConstant()\n")
+
 	constant := t.AddConstant(compilingChunk, value, parser.Current.Line)
 	if constant > 255 { //TODO: Allow this to be higher.
 		errorAtCurrent("Too many constants in one chunk.")
@@ -216,13 +246,15 @@ func emitConstant(value t.Value) {
 }
 
 func advanceCompiler() {
+	fmt.Printf("In compiler.advance()\n")
+	//fmt.Printf("advanceCompiler:: parser.Current:: %v\n", parser.Current)
 	parser.Previous = parser.Current
 
 	for {
 		errorToken := ErrorToken{}
 		errorToken, parser.Current = ScanToken()
 
-		if errorToken != (ErrorToken{}) {
+		if errorToken == (ErrorToken{}) {
 			break
 		}
 

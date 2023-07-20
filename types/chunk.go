@@ -1,6 +1,9 @@
 package types
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"fmt"
+)
 
 // --------------- Chunks -----------------//
 type Chunk struct {
@@ -10,17 +13,20 @@ type Chunk struct {
 }
 
 func WriteToChunk(chunk *Chunk, opCode byte, line int) {
+	fmt.Printf("In chunk.writeToChunk()\n")
 	chunk.Code = append(chunk.Code, opCode)
 	chunk.LineNumbers = append(chunk.LineNumbers, line)
 }
 
 func WriteConstantToChunk(chunk *Chunk, opCode byte, constantIndex float32, line int) {
+	fmt.Printf("In chunk.writeConstantToChunk()\n")
 	codeAndConstant := []byte{opCode, byte(constantIndex)}
 	chunk.Code = append(chunk.Code, codeAndConstant...)
 	chunk.LineNumbers = append(chunk.LineNumbers, line)
 }
 
 func AddConstant(chunk *Chunk, value Value, line int) int {
+	fmt.Print("In chunk.addConstant()\n")
 	chunk.Constants = append(chunk.Constants, value)
 	chunk.LineNumbers = append(chunk.LineNumbers, line)
 	return len(chunk.Constants) - 1

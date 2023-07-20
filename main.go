@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	fe "github.com/stuartstein777/exfnlang/frontend"
@@ -14,11 +15,11 @@ func main() {
 	//DebugTesting2()
 
 	if len(os.Args) > 1 {
+		fmt.Printf("Running file")
 		fe.RunFile(os.Args[1])
 	} else {
 		fe.Repl()
 	}
-
 }
 
 func DebugTesting2() {
