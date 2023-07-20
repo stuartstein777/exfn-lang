@@ -2,6 +2,7 @@ package frontend
 
 import (
 	"fmt"
+	"strconv"
 
 	h "github.com/stuartstein777/exfnlang/helpers"
 	t "github.com/stuartstein777/exfnlang/types"
@@ -15,8 +16,134 @@ type Parser struct {
 	PanicMode bool
 }
 
+const (
+	PREC_NONE       = iota
+	PREC_ASSIGNMENT // =
+	PREC_OR         // or
+	PREC_AND        // and
+	PREC_EQUALITY   // == !=
+	PREC_COMPARISON // < > <= >=
+	PREC_TERM       // + -
+	PREC_FACTOR     // * /
+	PREC_UNARY      // ! -
+	PREC_CALL       // . () []
+	PREC_PRIMARY    // literals, identifiers, this, super
+)
+
+type ParseFn func()
+
+type ParseRule interface {
+	Prefix() ParseFn
+	Infix() ParseFn
+	Precedence() int
+}
+
 var parser Parser = Parser{}
 var compilingChunk *t.Chunk = &t.Chunk{}
+
+func currentChunk() *t.Chunk {
+	return compilingChunk
+}
+
+func Unary() {
+	operatorType := parser.Previous.Type
+
+	// Compile the operand.
+	parsePrecedence(PREC_UNARY)
+
+	// Emit the operator instruction.
+	switch operatorType {
+	case TOKEN_MINUS:
+		emitByte(h.OP_NEGATE)
+	default:
+		return // Unreachable.
+	}
+}
+
+func Binary() {
+	operatorType := parser.Previous.Type
+	rule := GetRule(operatorType)
+	parsePrecedence(rule.Precedence() + 1)
+
+	switch operatorType {
+	case TOKEN_PLUS:
+		emitByte(h.OP_ADD)
+	case TOKEN_MINUS:
+		emitByte(h.OP_SUBTRACT)
+	case TOKEN_STAR:
+		emitByte(h.OP_MULTIPLY)
+	case TOKEN_SLASH:
+		emitByte(h.OP_DIVIDE)
+	default:
+		return // Unreachable.
+	}
+}
+
+var rules = []ParseRule{
+	TOKEN_LEFT_PAREN:    LeftParen{},
+	TOKEN_RIGHT_PAREN:   RightParen{},
+	TOKEN_LEFT_BRACE:    LeftBrace{},
+	TOKEN_RIGHT_BRACE:   RightBrace{},
+	TOKEN_COMMA:         Comma{},
+	TOKEN_DOT:           Dot{},
+	TOKEN_MINUS:         Minus{},
+	TOKEN_PLUS:          Plus{},
+	TOKEN_SEMICOLON:     Semicolon{},
+	TOKEN_SLASH:         Slash{},
+	TOKEN_STAR:          Star{},
+	TOKEN_BANG:          Bang{},
+	TOKEN_BANG_EQUAL:    BangEqual{},
+	TOKEN_EQUAL:         Equal{},
+	TOKEN_EQUAL_EQUAL:   EqualEqual{},
+	TOKEN_GREATER:       Greater{},
+	TOKEN_GREATER_EQUAL: GreaterEqual{},
+	TOKEN_LESS:          Less{},
+	TOKEN_LESS_EQUAL:    LessEqual{},
+	TOKEN_IDENTIFIER:    Identifier{},
+	TOKEN_STRING:        String{},
+	TOKEN_NUMBER:        NumberPrec{},
+	TOKEN_AND:           And{},
+	TOKEN_CLASS:         Class{},
+	TOKEN_ELSE:          Else{},
+	TOKEN_FALSE:         False{},
+	TOKEN_FOR:           For{},
+	TOKEN_FUN:           Fun{},
+	TOKEN_IF:            If{},
+	TOKEN_NIL:           Nil{},
+	TOKEN_OR:            Or{},
+	TOKEN_PRINT:         Print{},
+	TOKEN_RETURN:        Return{},
+	TOKEN_SUPER:         Super{},
+	TOKEN_TRUE:          True{},
+	TOKEN_VAR:           Var{},
+	TOKEN_WHILE:         While{},
+	TOKEN_ERROR:         Error{},
+	TOKEN_EOF:           EOF{},
+}
+
+func Number() {
+	value, _ := strconv.ParseFloat(GetToken(), 32)
+
+	// what to do on error here ?
+	emitConstant(value)
+}
+
+func GetRule(tokenType TokenType) ParseRule {
+	return rules[tokenType]
+}
+
+func parsePrecedence(precedence int) {
+	advance()
+	prefixRule := GetRule(parser.Previous.Type).Prefix
+	if prefixRule() == nil {
+		errorAtCurrent("Expect expression.")
+		return
+	}
+}
+
+func expression() {
+	parsePrecedence(PREC_ASSIGNMENT)
+}
 
 func interpret(source []rune) int {
 	chunk := t.Chunk{}
@@ -72,6 +199,20 @@ func emitByte(byte byte) {
 func emitBytes(byte1 byte, byte2 byte) {
 	emitByte(byte1)
 	emitByte(byte2)
+}
+
+func makeConstant(value t.Value) byte {
+	constant := t.AddConstant(compilingChunk, value, parser.Current.Line)
+	if constant > 255 { //TODO: Allow this to be higher.
+		errorAtCurrent("Too many constants in one chunk.")
+		return 0
+	}
+
+	return byte(constant)
+}
+
+func emitConstant(value t.Value) {
+	emitBytes(h.OP_CONSTANT, makeConstant(value))
 }
 
 func advanceCompiler() {

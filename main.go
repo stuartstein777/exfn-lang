@@ -55,10 +55,10 @@ func DebugTesting2() {
 }
 
 func DebugTesting1() {
-	chunk := vm.Chunk{
+	chunk := t.Chunk{
 		Code:        []byte{},
 		LineNumbers: []int{},
-		Constants:   []vm.Value{},
+		Constants:   []t.Value{},
 	}
 
 	t.WriteConstantToChunk(&chunk, h.OP_CONSTANT, 0, 1)
