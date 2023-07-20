@@ -127,7 +127,7 @@ func Number() {
 	fmt.Printf("In compiler.number()\n")
 	token := string(scanner.Source[parser.Previous.Start : parser.Previous.Start+parser.Previous.Length])
 	value, _ := strconv.ParseFloat(token, 32)
-	fmt.Printf("Number:: value = %f\n", value)
+	fmt.Printf("number:: value = %f\n", value)
 	// what to do on error here ?
 	emitConstant(value)
 }
@@ -220,6 +220,7 @@ func emitReturn() {
 
 func emitByte(byte byte) {
 	fmt.Printf("In compiler.emitByte()\n")
+	fmt.Printf("Emitting byte: %d\n", byte)
 	t.WriteToChunk(compilingChunk, byte, parser.Previous.Line)
 }
 
@@ -242,6 +243,7 @@ func makeConstant(value t.Value) byte {
 }
 
 func emitConstant(value t.Value) {
+	fmt.Printf("In compiler.emitConstant()\n")
 	emitBytes(h.OP_CONSTANT, makeConstant(value))
 }
 

@@ -10,14 +10,14 @@ OP_SUBTRACT      -> subtract the top two values on the stack.
 */
 const (
 	// Single-character tokens.
-	OP_RETURN byte = iota
-	OP_CONSTANT
+	OP_CONSTANT byte = iota
 	OP_CONSTANT_LONG
 	OP_NEGATE
 	OP_ADD
 	OP_SUBTRACT
 	OP_MULTIPLY
 	OP_DIVIDE
+	OP_RETURN
 )
 
 /*
