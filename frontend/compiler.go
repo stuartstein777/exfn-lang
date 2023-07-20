@@ -125,7 +125,7 @@ var rules = []ParseRule{
 
 func Number() {
 	fmt.Printf("In compiler.number()\n")
-	token := GetToken()
+	token := string(scanner.Source[parser.Previous.Start : parser.Previous.Start+parser.Previous.Length])
 	value, _ := strconv.ParseFloat(token, 32)
 	fmt.Printf("Number:: value = %f\n", value)
 	// what to do on error here ?

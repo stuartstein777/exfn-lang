@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	fe "github.com/stuartstein777/exfnlang/frontend"
 	h "github.com/stuartstein777/exfnlang/helpers"
 	t "github.com/stuartstein777/exfnlang/types"
@@ -13,13 +10,14 @@ import (
 func main() {
 	//DebugTesting1()
 	//DebugTesting2()
+	fe.Repl()
 
-	if len(os.Args) > 1 {
-		fmt.Printf("Running file")
-		fe.RunFile(os.Args[1])
-	} else {
-		fe.Repl()
-	}
+	// if len(os.Args) > 1 {
+	// 	fmt.Printf("Running file")
+	// 	fe.RunFile(os.Args[1])
+	// } else {
+	// 	fe.Repl()
+	// }
 }
 
 func DebugTesting2() {

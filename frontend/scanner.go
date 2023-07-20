@@ -240,7 +240,7 @@ func ScanToken() (ErrorToken, Token) {
 	fmt.Printf("In scanner.scanToken()\n")
 	SkipWhitespace()
 
-	fmt.Printf("scanToken:: scanner.start = %s\n", string(scanner.Source[scanner.Current]))
+	fmt.Printf("scanToken:: scanner.start = %s\n", string(scanner.Source[scanner.Start]))
 
 	scanner.Start = scanner.Current
 
