@@ -13,7 +13,7 @@ type Chunk struct {
 }
 
 func WriteToChunk(chunk *Chunk, opCode byte, line int) {
-	fmt.Printf("In chunk.writeToChunk()\n")
+	fmt.Printf("In chunk.writeChunk()\n")
 	chunk.Code = append(chunk.Code, opCode)
 	chunk.LineNumbers = append(chunk.LineNumbers, line)
 }

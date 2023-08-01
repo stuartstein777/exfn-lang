@@ -1,7 +1,8 @@
 package frontend
 
 func Repl() {
-	interpret([]rune("6+7"))
+	//interpret([]rune("6+7"))
+	interpret([]rune("(6+7*4)+2"))
 	// for {
 	// 	fmt.Printf("> ")
 

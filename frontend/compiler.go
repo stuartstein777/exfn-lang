@@ -62,7 +62,7 @@ func Unary() {
 }
 
 func Binary() {
-	fmt.Printf("In compiler.binary\n")
+	fmt.Printf("In compiler.binary()\n")
 	operatorType := parser.Previous.Type
 	rule := GetRule(operatorType)
 	parsePrecedence(rule.Precedence() + 1)
@@ -134,6 +134,7 @@ func Number() {
 
 func GetRule(tokenType TokenType) ParseRule {
 	fmt.Printf("In compiler.getRule()\n")
+	fmt.Printf("compiler.getRule :: precedence = %v\n", rules[tokenType].Precedence())
 	return rules[tokenType]
 }
 
@@ -152,7 +153,7 @@ func parsePrecedence(precedence int) {
 
 	for {
 		currentPrecedence := GetRule(parser.Current.Type).Precedence()
-		if precedence <= currentPrecedence {
+		if precedence > currentPrecedence {
 			break
 		}
 		fmt.Printf("compiler.parsePrecedence :: Higher precedence: precedence = %d, currentPrecedence = %d\n", precedence, currentPrecedence)
@@ -245,6 +246,9 @@ func makeConstant(value t.Value) byte {
 func emitConstant(value t.Value) {
 	fmt.Printf("In compiler.emitConstant()\n")
 	emitBytes(h.OP_CONSTANT, makeConstant(value))
+	//TODO: Call WriteCOnstantToChunk
+	//TODO: How do I know the index ?
+	//t.WriteConstantToChunk(compilingChunk, h.OP_CONSTANT, int(len(compilingChunk.Constants)-1), parser.Current.Line)
 }
 
 func advanceCompiler() {

@@ -28,8 +28,9 @@ func peek() rune {
 func advance() rune {
 	fmt.Printf("In scanner.advance()\n")
 	scanner.Current++
+	fmt.Printf("scanner.advance() :: scanner.current = %d\n", scanner.Current)
 	lexeme := rune(scanner.Source[scanner.Current-1])
-	fmt.Printf("advance() :: scanner.current = %v\n", string(lexeme))
+	fmt.Printf("advance() :: scanner.current = %v\n", scanner.Source[scanner.Current-1])
 	return lexeme
 }
 
@@ -53,6 +54,8 @@ func MakeToken(tokenType TokenType) Token {
 }
 
 func SkipWhitespace() {
+	fmt.Printf("In SkipWhitespace()\n")
+
 	for {
 		c := peek()
 
@@ -238,6 +241,10 @@ func match(expected rune) bool {
 
 func ScanToken() (ErrorToken, Token) {
 	fmt.Printf("In scanner.scanToken()\n")
+	if isAtEnd() {
+		return ErrorToken{}, MakeToken(TOKEN_EOF)
+	}
+
 	SkipWhitespace()
 
 	fmt.Printf("scanToken:: scanner.start = %s\n", string(scanner.Source[scanner.Start]))
