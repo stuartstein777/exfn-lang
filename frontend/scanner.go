@@ -1,7 +1,5 @@
 package frontend
 
-import "fmt"
-
 type Scanner struct {
 	Source       []rune
 	SourceLength int
@@ -20,17 +18,17 @@ func GetToken() string {
 	return string(scanner.Source[scanner.Start:scanner.Current])
 }
 func peek() rune {
-	fmt.Printf("In scanner.peek()\n")
+	//fmt.Printf("In scanner.peek() %d \n", scanner.Current)
 	return scanner.Source[scanner.Current]
 }
 
 // Read the next token and advance the scanner.
 func advance() rune {
-	fmt.Printf("In scanner.advance()\n")
+	//fmt.Printf("In scanner.advance()\n")
 	scanner.Current++
-	fmt.Printf("scanner.advance() :: scanner.current = %d\n", scanner.Current)
+	//fmt.Printf("scanner.advance() :: scanner.current = %d\n", scanner.Current)
 	lexeme := rune(scanner.Source[scanner.Current-1])
-	fmt.Printf("advance() :: scanner.current = %v\n", scanner.Source[scanner.Current-1])
+	//fmt.Printf("advance() :: scanner.current = %v\n", scanner.Source[scanner.Current-1])
 	return lexeme
 }
 
@@ -45,6 +43,7 @@ func IsAlpha(char rune) bool {
 }
 
 func MakeToken(tokenType TokenType) Token {
+	//fmt.Printf("Making token for %s\n", GetToken())
 	return Token{
 		tokenType,
 		scanner.Start,
@@ -54,7 +53,7 @@ func MakeToken(tokenType TokenType) Token {
 }
 
 func SkipWhitespace() {
-	fmt.Printf("In SkipWhitespace()\n")
+	//fmt.Printf("In SkipWhitespace()\n")
 
 	for {
 		c := peek()
@@ -65,7 +64,7 @@ func SkipWhitespace() {
 		case '\n':
 			scanner.Line++
 			advance()
-		case '/':
+		case '\\':
 			if peekNext() == '/' {
 				for peek() != '\n' && !isAtEnd() {
 					advance()
@@ -107,7 +106,7 @@ func readString() (ErrorToken, Token) {
 }
 
 func peekNext() rune {
-	fmt.Printf("In scanner.peekNext()\n")
+	//fmt.Printf("In scanner.peekNext()\n")
 	if scanner.Current+1 >= scanner.SourceLength {
 		return '\000'
 	}
@@ -116,7 +115,7 @@ func peekNext() rune {
 }
 
 func readNumber() Token {
-	fmt.Printf("In scanner.number()\n")
+	//fmt.Printf("In scanner.number()\n")
 	for {
 		if isAtEnd() || !IsDigit(peek()) {
 			break
@@ -240,14 +239,14 @@ func match(expected rune) bool {
 }
 
 func ScanToken() (ErrorToken, Token) {
-	fmt.Printf("In scanner.scanToken()\n")
+	//fmt.Printf("In scanner.scanToken()\n")
 	if isAtEnd() {
 		return ErrorToken{}, MakeToken(TOKEN_EOF)
 	}
 
 	SkipWhitespace()
 
-	fmt.Printf("scanToken:: scanner.start = %s\n", string(scanner.Source[scanner.Start]))
+	//fmt.Printf("scanToken:: scanner.start = %s\n", string(scanner.Source[scanner.Start]))
 
 	scanner.Start = scanner.Current
 
@@ -257,7 +256,7 @@ func ScanToken() (ErrorToken, Token) {
 
 	c := advance()
 
-	fmt.Printf("scanToken:: c = %v\n", string(rune(c)))
+	//fmt.Printf("scanToken:: c = %v\n", string(rune(c)))
 
 	if IsAlpha(c) {
 		return ErrorToken{}, readIdentifier()

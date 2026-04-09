@@ -174,7 +174,7 @@ func (g Star) Precedence() int {
 type Bang struct{}
 
 func (g Bang) Prefix() ParseFn {
-	return nil
+	return Unary
 }
 
 func (g Bang) Infix() ParseFn {
@@ -384,7 +384,7 @@ func (g Else) Precedence() int {
 type False struct{}
 
 func (g False) Prefix() ParseFn {
-	return nil
+	return Literal
 }
 
 func (g False) Infix() ParseFn {
@@ -444,7 +444,7 @@ func (g If) Precedence() int {
 type Nil struct{}
 
 func (g Nil) Prefix() ParseFn {
-	return nil
+	return Literal
 }
 
 func (g Nil) Infix() ParseFn {
@@ -519,7 +519,7 @@ func (g Super) Precedence() int {
 type True struct{}
 
 func (g True) Prefix() ParseFn {
-	return nil
+	return Literal
 }
 
 func (g True) Infix() ParseFn {

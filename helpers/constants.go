@@ -18,6 +18,10 @@ const (
 	OP_MULTIPLY
 	OP_DIVIDE
 	OP_RETURN
+	OP_NIL
+	OP_TRUE
+	OP_FALSE
+	OP_NOT
 )
 
 /*

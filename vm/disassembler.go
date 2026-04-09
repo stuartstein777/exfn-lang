@@ -11,9 +11,21 @@ import (
 func printStack(vm *VM) {
 	fmt.Printf("          ")
 	for i := 0; i < vm.StackPtr; i++ {
-		fmt.Printf("[ %g ]", vm.Stack[i])
+		fmt.Printf("[ %s ]", printValue(vm.Stack[i]))
 	}
 	fmt.Printf("\n")
+}
+
+func printValue(v t.Value) string {
+	switch val := v.(type) {
+	case t.BoolValue:
+		return fmt.Sprintf("%t", val)
+	case t.NumberValue:
+		return fmt.Sprintf("%f", val)
+	case t.NilValue:
+		return "nil"
+	}
+	return "Unknown value type"
 }
 
 func simpleInstruction(name string, offset int) int {
@@ -79,6 +91,14 @@ func disassembleInstruction(chunk t.Chunk, offset int) int {
 		return simpleInstruction("OP_MULTIPLY", offset)
 	case h.OP_DIVIDE:
 		return simpleInstruction("OP_DIVIDE", offset)
+	case h.OP_TRUE:
+		return simpleInstruction("OP_TRUE", offset)
+	case h.OP_FALSE:
+		return simpleInstruction("OP_FALSE", offset)
+	case h.OP_NIL:
+		return simpleInstruction("OP_NIL", offset)
+	case h.OP_NOT:
+		return simpleInstruction("OP_NOT", offset)
 	default:
 		fmt.Printf("Unknown opcode %d\n", instruction)
 		return offset + 1
